@@ -18,7 +18,7 @@ Ghidorah uses messages to pass information between listeners. Here are the suppo
 
 ### Discovery Message
 
-The Discovery Message is sent by the arbiter to discover who is on the ring. It must be the first message a listener receives. If a listener receives any other message before the Discovery Message, it will ignore that message and simply relay it to the nnext listener.
+The Discovery Message is sent by the arbiter to discover who is on the ring. It must be the first message a listener receives. If a listener receives any other message before the Discovery Message, it will ignore that message and simply relay it to the next listener.
 
 * Byte 0: <0x44>
 * Byte 1: <Source Nodex>
