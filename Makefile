@@ -1,4 +1,4 @@
-DEVICE = /dev/cu.usbserial-FTVCW8GB0
+DEVICE = /dev/cu.usbserial-A2003EyG
 EMUDEVICE = /dev/cu.usbserial-A100K8WY
 
 all:
