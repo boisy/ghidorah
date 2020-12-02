@@ -100,7 +100,8 @@ class Ghidorah(object):
 			self.logInboundMessage(response)
 
 
-	def _exec(self, nodex, execaddr):
+	# Execute at a specific address
+	def execute(self, nodex, execaddr):
 		message = [0x45, 0x00, nodex, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
 	
 		with serial.Serial(self.device, self.baud) as ser:
@@ -131,7 +132,7 @@ class Ghidorah(object):
 
 		# Execute only if execaddr != 0
 		if execaddr != 0:
-			self._exec(nodex, execaddr)	
+			self.execute(nodex, execaddr)	
 
 	# Load a Disk BASIC BIN file (supports segmented BIN files as well)
 	def loadm(self, nodex, file, loadaddr, execaddr = -1):
@@ -162,7 +163,7 @@ class Ghidorah(object):
 			
 		# Execute only if execaddr != 0
 		if execaddr != 0:
-			self._exec(nodex, execaddr)	
+			self.execute(nodex, execaddr)	
 
 	def messageToString(self, message):
 		res = ''.join(format(x, '02x') for x in message)

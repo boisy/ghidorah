@@ -7,14 +7,14 @@ defaultDevice = '/dev/cu.usbserial-FT079LCR2'
 defaultDevice = '/dev/cu.usbserial-USAKMYZM'
 defaultDevice = '/dev/cu.usbserial-A2003EyG'
 
-parser = argparse.ArgumentParser(description='Process some integers.')
+parser = argparse.ArgumentParser(description='Parameters for the command.')
 parser.add_argument('--baud', type=int, default=57600,
                     help='baud rate')
 parser.add_argument('--device', type=str, default=defaultDevice,
                     help='serial port')
 parser.add_argument('--nodex', type=str, default='0xFF',
                     help='nodex (0-254, or 255 for broadcast (default)')
-parser.add_argument('--verbose', type=int, default=1,
+parser.add_argument('--verbose', action='store_true',
                     help='verbosity')
 
 args = parser.parse_args()
@@ -32,7 +32,7 @@ print('Number of listeners =', listeners)
 maxBaudRate = 57600
 for nodex in range(1, listeners + 1):
 	mtyp = l.identity(nodex)
-	if mtyp == 'COCO3':
+	if mtyp == 'CC3':
 		mbau = 115200
 	else:
 		mbau = 57600
