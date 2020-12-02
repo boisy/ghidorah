@@ -33,5 +33,5 @@ nodex = int(args.nodex, 0)
 verbose = args.verbose
 
 l = ghidorah.Ghidorah(device, baud)
-l.load(nodex, file, loadaddr, execaddr)
+l.loadm(nodex, file, loadaddr, execaddr)
 

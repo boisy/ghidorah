@@ -1,7 +1,8 @@
 import serial
 
 class Ghidorah(object):
-
+	messageDataLength = 16
+	
 	read_timeout = 1.0
 	message_size = 22
 
@@ -60,10 +61,10 @@ class Ghidorah(object):
 
 		with serial.Serial(self.device, self.baud) as ser:
 			ser.timeout = self.read_timeout
-			for x in range(readaddr, readaddr + readlen, 16):
+			for x in range(readaddr, readaddr + readlen, self.messageDataLength):
 				message[3] = int(x / 256)
 				message[4] = int(x % 256)
-				message[5] = 16
+				message[5] = self.messageDataLength
 		
 				self.logOutboundMessage(message)
 		
@@ -116,14 +117,11 @@ class Ghidorah(object):
 			response = ser.read(self.message_size)
 			self.logInboundMessage(response)
 
-
+	# Load raw binary data into memory
 	def load(self, nodex, file, loadaddr, execaddr):
-		message = [0x57, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
-		message[1] = nodex
-
 		f = open(file, "rb")
 		while True:
-			bytes = f.read(16)
+			bytes = f.read(self.messageDataLength)
 			if len(bytes) == 0:
 				break;
 			l = len(bytes)
@@ -131,6 +129,37 @@ class Ghidorah(object):
 			self.write(nodex, loadaddr, l, bytes)
 			loadaddr = loadaddr + l
 
+		# Execute only if execaddr != 0
+		if execaddr != 0:
+			self._exec(nodex, execaddr)	
+
+	# Load a Disk BASIC BIN file (supports segmented BIN files as well)
+	def loadm(self, nodex, file, loadaddr, execaddr = -1):
+		f = open(file, "rb")
+		try: 
+			while True:
+				bytes = f.read(5)
+				segsize = bytes[1] * 256 + bytes[2]
+				orgaddr = bytes[3] * 256 + bytes[4]
+				if segsize == 0:
+					# orgaddr is execaddr
+					if execaddr == 0:
+						execaddr = orgaddr
+					break
+				left = segsize
+				while left > 0:
+					readchunk = min(self.messageDataLength, left)
+					left = left - readchunk
+					bytes = f.read(readchunk)
+					if len(bytes) == 0:
+						break;
+					l = len(bytes)
+
+					self.write(nodex, orgaddr, l, bytes)
+					orgaddr = orgaddr + l
+		except EOFError:
+			pass
+			
 		# Execute only if execaddr != 0
 		if execaddr != 0:
 			self._exec(nodex, execaddr)	
