@@ -29,17 +29,21 @@ listeners = l.discovery()
 print('Number of listeners =', listeners)
 
 # 2. get the identity of each listener and find their maximum baud rate
-maxBaudRate = 57600
+numCC3s = 0
+numCC2s = 0
 for nodex in range(1, listeners + 1):
 	mtyp = l.identity(nodex)
 	if mtyp == 'CC3':
-		mbau = 115200
+		numCC3s = numCC3s + 1
+		print('Nodex', nodex, ', machine type = CoCo 3')
 	else:
-		mbau = 57600
-	print('Nodex', nodex, ', machine type =', mtyp)
+		numCC2s = numCC2s + 1
+		print('Nodex', nodex, ', machine type = CoCo 1/2')
 
 # 3. if every listener has a maximum baud rate of 115.2kbps, set them up with that rate
-#if maxBaudRate == 1:
-#	data = [0x7F, 0xFF, 0xD9, 0x39]
-#	ghidorah.write(device, baud, 0xFF, 0x1200, 0x4, data)
-#	ghidorah.exec(device, baud, 0xFF, 0x1200)
+print("No. of CoCo 1/2s: ", numCC2s, ", No. of CoCo 3s: ", numCC3s)
+if numCC2s == 0:
+	# We only have CoCo 3s. Kick them into high speed
+	# clr $FFD9; rts
+	l.write(nodex, 0x600, 0x4, [0x7F, 0xFF, 0xD9, 0x39])
+	l.execute(nodex, 0x600)

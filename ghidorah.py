@@ -50,8 +50,8 @@ class Ghidorah(object):
 			if len(response) == self.message_size:
 				self.logInboundMessage(response)
 
-				machineType = response[3:21].decode('ASCII')
-	
+				machineType = response[3:21].decode('ASCII').replace('\00', '')
+
 				return machineType
 			else:
 				return (-1, -1, "")
