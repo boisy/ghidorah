@@ -45,5 +45,5 @@ print("No. of CoCo 1/2s: ", numCC2s, ", No. of CoCo 3s: ", numCC3s)
 if numCC2s == 0:
 	# We only have CoCo 3s. Kick them into high speed
 	# clr $FFD9; rts
-	l.write(nodex, 0x600, 0x4, [0x7F, 0xFF, 0xD9, 0x39])
+	l.write(nodex, 0x600, [0x7F, 0xFF, 0xD9, 0x39])
 	l.execute(nodex, 0x600)

@@ -81,7 +81,7 @@ class Ghidorah(object):
 				result.extend(response[6:])
 		return result
 
-	def write(self, nodex, writeaddr, writelen, data):
+	def write(self, nodex, writeaddr, data):
 		message = [0x57, 0x00, nodex, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
 
 		l = len(data)
@@ -127,10 +127,8 @@ class Ghidorah(object):
 			bytes = f.read(self.messageDataLength)
 			if len(bytes) == 0:
 				break;
-			l = len(bytes)
-
-			self.write(nodex, loadaddr, l, bytes)
-			loadaddr = loadaddr + l
+			self.write(nodex, loadaddr, bytes)
+			loadaddr = loadaddr + len(bytes)
 
 		# Execute only if execaddr != 0
 		if execaddr != 0:
@@ -158,10 +156,8 @@ class Ghidorah(object):
 					bytes = f.read(readchunk)
 					if len(bytes) == 0:
 						break;
-					l = len(bytes)
-
-					self.write(nodex, orgaddr, l, bytes)
-					orgaddr = orgaddr + l
+					self.write(nodex, orgaddr, bytes)
+					orgaddr = orgaddr + len(bytes)
 		except EOFError:
 			pass
 			
