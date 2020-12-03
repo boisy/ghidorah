@@ -12,6 +12,50 @@ The TRS-80 Color Computer family is currently supported, but in theory, any comp
 * Nodex: a number between 0 and 254 that uniquely identifies a node on the ring.
 * Ring: the physical cable that connects the arbiter and listeners together.
 
+## Commands
+
+There are Python 3 commands for several common operations:
+
+### Discover
+
+This is the first message that should be sent to all listeners on the ring. This forces each listener to assign itself an ID, and tells the arbiter how many listeners are on the ring.
+
+Note: If any other message is sent prior to this one, the listeners ignore it!
+
+Example:
+
+`python3 discover.py --device /dev/cu.usbserial-FTVCW8GB0 --baud 57600`
+
+Replace the device with the appropriate name for your arbiter. You can leave off the `--baud 57600` since it's the default.
+
+### Identity
+
+This command identifies the type of machine that is listening.
+
+Note: If any other message is sent prior to this one, the listeners ignore it!
+
+Example 1: Identify all listeners on the ring.
+
+`python3 identify.py --device /dev/cu.usbserial-FTVCW8GB0`
+
+Example 2: Identify a particular listener on the ring.
+
+`python3 identify.py --device /dev/cu.usbserial-FTVCW8GB0 --nodex 2`
+
+### Setup
+
+This command can be used in place of `discover.py` since it does a Discovery, performs an Identity, and if there are only CoCo 3s on the ring, puts them in high-speed mode. In that case, subsequent commands should use `--baud 115200`.
+
+Example: Setup all listeners on the ring.
+
+`python3 setup.py --device /dev/cu.usbserial-FTVCW8GB0`
+
+### Load
+<TODO>
+
+### LoadM
+<TODO>
+
 ## Messages
 
 Ghidorah uses messages to pass information between listeners. Here are the supported messages:
