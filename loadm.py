@@ -38,17 +38,13 @@ fast = args.fast
 l = ghidorah.Ghidorah(device, baud, verbose)
 
 if fast == True:
-	#l.write(nodex, 0xFFD9, 0x1, [0x00])
-	l.write(nodex, 0x600, 0x4, [0x7F, 0xFF, 0xD9, 0x39])
-	l.execute(nodex, 0x600)
+	l.write(nodex, 0xFFD9, 0x1, [0x00])
 	l.baud = 115200
 		
 execaddr = l.loadm(nodex, file, offset, -1)
 
 if fast == True:
-	#l.write(nodex, 0xFFD8, 0x1, [0x00])
-	l.write(nodex, 0x600, 0x4, [0x7F, 0xFF, 0xD8, 0x39])
-	l.execute(nodex, 0x600)
+	l.write(nodex, 0xFFD8, 0x1, [0x00])
 	l.baud = baud
 
 l.execute(nodex, execaddr)
