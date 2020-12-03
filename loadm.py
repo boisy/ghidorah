@@ -38,13 +38,20 @@ fast = args.fast
 l = ghidorah.Ghidorah(device, baud, verbose)
 
 if fast == True and baud == 57600:
-	l.write(nodex, 0xFFD9, [0x00])
+	# We put the CoCo into hi-speed mode with this very short program then perform a separate execute.
+	# This works because the Ghidorah execute message sends out the message to the next listener BEFORE
+	# executing the code. This allows us to get the response back at the lo-speed rate.
+	l.write(nodex, 0x500, [0x7F, 0xFF, 0xD9, 0x39])
+	l.execute(nodex, 0x500)
 	l.baud = 115200
 		
 execaddr = l.loadm(nodex, file, offset, -1)
 
 if fast == True and baud == 57600:
-	l.write(nodex, 0xFFD8, [0x00])
+	# The same logic above, except now we are in hi-speed mode, and we get the execute command back
+	# at the hi-speed rate.
+	l.write(nodex, 0x500, [0x7F, 0xFF, 0xD8, 0x39])
+	l.execute(nodex, 0x500)
 	l.baud = baud
 
 l.execute(nodex, execaddr)
