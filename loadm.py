@@ -35,9 +35,6 @@ nodex = int(args.nodex, 0)
 verbose = args.verbose
 fast = args.fast
 
-if fast == True:
-	baud = 57600
-
 l = ghidorah.Ghidorah(device, baud, verbose)
 
 if fast == True:
@@ -52,6 +49,6 @@ if fast == True:
 	#l.write(nodex, 0xFFD8, 0x1, [0x00])
 	l.write(nodex, 0x600, 0x4, [0x7F, 0xFF, 0xD8, 0x39])
 	l.execute(nodex, 0x600)
-	l.baud = 57600
+	l.baud = baud
 
 l.execute(nodex, execaddr)
