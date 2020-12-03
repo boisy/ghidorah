@@ -8,10 +8,12 @@ defaultDevice = '/dev/cu.usbserial-USAKMYZM'
 defaultDevice = '/dev/cu.usbserial-A2003EyG'
 
 parser = argparse.ArgumentParser(description='Parameters for the command.')
+parser.add_argument('--fast', action='store_true',
+                    help='load in fast mode (115.2kbps)')
 parser.add_argument('--file', type=str, default='file',
                     help='file to load')
-parser.add_argument('--loadaddr', type=str, default='0x600',
-                    help='address to load file')
+parser.add_argument('--offset', type=str, default='0',
+                    help='offset to load file')
 parser.add_argument('--execaddr', type=str, default='0x0',
                     help='address to execute ')
 parser.add_argument('--baud', type=int, default=57600,
@@ -27,11 +29,29 @@ args = parser.parse_args()
 baud = args.baud
 device = args.device
 file = args.file
-loadaddr = int(args.loadaddr, 0)
+offset = int(args.offset, 0)
 execaddr = int(args.execaddr, 0)
 nodex = int(args.nodex, 0)
 verbose = args.verbose
+fast = args.fast
+
+if fast == True:
+	baud = 57600
 
 l = ghidorah.Ghidorah(device, baud, verbose)
-l.loadm(nodex, file, loadaddr, execaddr)
 
+if fast == True:
+	#l.write(nodex, 0xFFD9, 0x1, [0x00])
+	l.write(nodex, 0x600, 0x4, [0x7F, 0xFF, 0xD9, 0x39])
+	l.execute(nodex, 0x600)
+	l.baud = 115200
+		
+execaddr = l.loadm(nodex, file, offset, -1)
+
+if fast == True:
+	#l.write(nodex, 0xFFD8, 0x1, [0x00])
+	l.write(nodex, 0x600, 0x4, [0x7F, 0xFF, 0xD8, 0x39])
+	l.execute(nodex, 0x600)
+	l.baud = 57600
+
+l.execute(nodex, execaddr)

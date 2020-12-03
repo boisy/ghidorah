@@ -137,16 +137,18 @@ class Ghidorah(object):
 			self.execute(nodex, execaddr)	
 
 	# Load a Disk BASIC BIN file (supports segmented BIN files as well)
-	def loadm(self, nodex, file, loadaddr, execaddr = -1):
+	def loadm(self, nodex, file, offset = 0, execaddr = -1):
+		execaddr_in_file = 0
 		f = open(file, "rb")
 		try: 
 			while True:
 				bytes = f.read(5)
 				segsize = bytes[1] * 256 + bytes[2]
-				orgaddr = bytes[3] * 256 + bytes[4]
+				orgaddr = (bytes[3] * 256 + bytes[4]) + offset
 				if segsize == 0:
+					execaddr_in_file = orgaddr
 					# orgaddr is execaddr
-					if execaddr == 0:
+					if execaddr != -1:
 						execaddr = orgaddr
 					break
 				left = segsize
@@ -163,9 +165,11 @@ class Ghidorah(object):
 		except EOFError:
 			pass
 			
-		# Execute only if execaddr != 0
-		if execaddr != 0:
-			self.execute(nodex, execaddr)	
+		# Execute only if execaddr != -1
+		if execaddr != -1:
+			self.execute(nodex, execaddr)
+			
+		return execaddr_in_file
 
 	def messageToString(self, message):
 		res = ''.join(format(x, '02x') for x in message)
