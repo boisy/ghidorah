@@ -50,11 +50,30 @@ Example: Setup all listeners on the ring.
 
 `python3 setup.py --device /dev/cu.usbserial-FTVCW8GB0`
 
+### Read
+This command reads memory from a listener and returns the bytes.
+
+Example: Read 256 bytes from location $6000 from listener 1:
+
+`python3 read.py --device /dev/cu.usbserial-FTVCW8GB0 --readaddr 0x6000 --readlen 0x100 --nodex 1`
+
 ### Load
-<TODO>
+This command writes bytes to a listener's memory. Optionally, it can execute at an address.               
+
+Example 1: Load the contents of the file `test.raw` into the memory of listener 3 at address $0700:
+
+`python3 load.py --device /dev/cu.usbserial-FTVCW8GB0 --file test.raw --loadaddr 0x700 --nodex 3`
+
+Example 2: Load the contents of the file `game.raw` into the memory of listener 3 at address $0700 and execute at that address:
+
+`python3 load.py --device /dev/cu.usbserial-FTVCW8GB0 --file game.raw --loadaddr 0x700 --execaddr 0x700 --nodex 3`
 
 ### LoadM
-<TODO>
+This command behaves similar to the Load command, except that it can properly load Disk BASIC compatible .BIN files. Also, the code will automatically execute once loaded.
+
+Example: Load the contents of the file `LANCER.BIN` into the memory of listener 2 and start the game:
+
+`python3 loadm.py --device /dev/cu.usbserial-FTVCW8GB0 --file LANCER.BIN --nodex 2`
 
 ## Messages
 

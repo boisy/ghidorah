@@ -61,6 +61,7 @@ class Ghidorah(object):
 
 		with serial.Serial(self.device, self.baud) as ser:
 			ser.timeout = self.read_timeout
+			result = bytearray()
 			for x in range(readaddr, readaddr + readlen, self.messageDataLength):
 				message[3] = int(x / 256)
 				message[4] = int(x % 256)
@@ -77,7 +78,8 @@ class Ghidorah(object):
 					message[6:] = response[6:]
 
 					self.logInboundMessage(response)
-	
+				result.extend(response[6:])
+		return result
 
 	def write(self, nodex, writeaddr, writelen, data):
 		message = [0x57, 0x00, nodex, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
