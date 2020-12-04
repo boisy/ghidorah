@@ -25,7 +25,10 @@ verbose = args.verbose
 
 # 1. perform discovery and get # of listeners
 l = ghidorah.Ghidorah(device, baud, verbose)
-listeners = l.discovery()
+(error, listeners) = l.discovery()
+if error == -1:
+	print("Timeout error")
+	exit(0)
 print('Number of listeners =', listeners)
 
 # 2. get the identity of each listener and find their maximum baud rate

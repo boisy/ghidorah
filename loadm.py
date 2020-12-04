@@ -45,7 +45,10 @@ if fast == True and baud == 57600:
 	l.execute(nodex, 0x500)
 	l.baud = 115200
 		
-execaddr = l.loadm(nodex, file, offset, -1)
+(error, execaddr) = l.loadm(nodex, file, offset, -1)
+if error == -1:
+	print("Timeout error")
+	exit(0)
 
 if fast == True and baud == 57600:
 	# The same logic above, except now we are in hi-speed mode, and we get the execute command back
