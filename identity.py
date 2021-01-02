@@ -25,7 +25,4 @@ verbose = args.verbose
 
 l = ghidorah.Ghidorah(device, baud, verbose)
 mtype = l.identity(nodex)
-if mtype == "":
-	print("no response.")
-else:
-	print(mtype)
+print(mtype)

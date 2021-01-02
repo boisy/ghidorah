@@ -30,8 +30,5 @@ nodex = int(args.nodex, 0)
 verbose = args.verbose
 
 l = ghidorah.Ghidorah(device, baud, verbose)
-(error, bytes) = l.read(nodex, readaddr, readlen)
-if error == -1:
-	print("Timeout error")
-	exit(0)
-print(bytes)
+b = l.read(nodex, readaddr, readlen)
+print(b)

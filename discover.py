@@ -21,9 +21,5 @@ device = args.device
 verbose = args.verbose
 
 m = ghidorah.Ghidorah(device, baud, verbose)
-(error, numberOfListeners) = m.discovery()
-if error == -1:
-	print("Timeout error")
-	exit(0)
-
+numberOfListeners = m.discovery()
 print('All listeners initialized. Number of listeners: ' + str(numberOfListeners))

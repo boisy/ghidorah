@@ -8,12 +8,10 @@ defaultDevice = '/dev/cu.usbserial-USAKMYZM'
 defaultDevice = '/dev/cu.usbserial-A2003EyG'
 
 parser = argparse.ArgumentParser(description='Parameters for the command.')
-parser.add_argument('--fast', action='store_true',
-                    help='load in fast mode (115.2kbps)')
 parser.add_argument('--file', type=str, default='file',
                     help='file to load')
-parser.add_argument('--offset', type=str, default='0',
-                    help='offset to load file')
+parser.add_argument('--loadaddr', type=str, default='0x600',
+                    help='address to load file')
 parser.add_argument('--execaddr', type=str, default='0x0',
                     help='address to execute ')
 parser.add_argument('--baud', type=int, default=57600,
@@ -29,32 +27,11 @@ args = parser.parse_args()
 baud = args.baud
 device = args.device
 file = args.file
-offset = int(args.offset, 0)
+loadaddr = int(args.loadaddr, 0)
 execaddr = int(args.execaddr, 0)
 nodex = int(args.nodex, 0)
 verbose = args.verbose
-fast = args.fast
 
 l = ghidorah.Ghidorah(device, baud, verbose)
+l.loadm(nodex, file, loadaddr, execaddr)
 
-if fast == True and baud == 57600:
-	# We put the CoCo into hi-speed mode with this very short program then perform a separate execute.
-	# This works because the Ghidorah execute message sends out the message to the next listener BEFORE
-	# executing the code. This allows us to get the response back at the lo-speed rate.
-	l.write(nodex, 0x500, [0x7F, 0xFF, 0xD9, 0x39])
-	l.execute(nodex, 0x500)
-	l.baud = 115200
-		
-(error, execaddr) = l.loadm(nodex, file, offset, -1)
-if error == -1:
-	print("Timeout error")
-	exit(0)
-
-if fast == True and baud == 57600:
-	# The same logic above, except now we are in hi-speed mode, and we get the execute command back
-	# at the hi-speed rate.
-	l.write(nodex, 0x500, [0x7F, 0xFF, 0xD8, 0x39])
-	l.execute(nodex, 0x500)
-	l.baud = baud
-
-l.execute(nodex, execaddr)
