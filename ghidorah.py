@@ -1,3 +1,4 @@
+import os
 import serial
 
 class Ghidorah(object):
@@ -7,12 +8,15 @@ class Ghidorah(object):
 	message_size = 22
 
 	def __init__(self, device, baud = 57600, verbose = 1):
-		self.device = device
+		envDev = os.environ.get('GHIDORAH_DEVICE')
+		if envDev != None:
+			self.device = envDev
+		else:
+			self.device = device
 		self.baud = baud
 		self.verbose = verbose
 
 	def discovery(self):
-		error = -1
 		message = bytearray([0x44, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
 		with serial.Serial(self.device, self.baud) as ser:
 			ser.timeout = self.read_timeout
@@ -30,17 +34,14 @@ class Ghidorah(object):
 			if len(response) == self.message_size:
 				# the # of listeners is at byte offset 2
 				numberOfListeners = response[2]
-				error = 0
 
 				self.logInboundMessage(response)
 
-		return (error, numberOfListeners)
+		return numberOfListeners
 
 
 	def identity(self, nodex):
-		error = -1
 		message = bytearray([0x49, 0x00, nodex, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
-		machineType = ""
 		with serial.Serial(self.device, self.baud) as ser:
 			ser.timeout = self.read_timeout
 			self.logOutboundMessage(message)
@@ -53,17 +54,18 @@ class Ghidorah(object):
 	
 			if len(response) == self.message_size:
 				self.logInboundMessage(response)
-				machineType = response[3:21].decode('ASCII').replace('\00', '')
-				error = 0
 
-			return (error, "")
+				machineType = response[3:21].decode('ASCII')
+	
+				return machineType
+			else:
+				return (-1, -1, "")
 
 	def read(self, nodex, readaddr, readlen):
-		error = -1
 		message = bytearray([0x52, 0x00, nodex, 0x00, 0x00, 0x00, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0xAA, 0x55, 0x0AA, 0x55])
+
 		with serial.Serial(self.device, self.baud) as ser:
 			ser.timeout = self.read_timeout
-			result = bytearray()
 			for x in range(readaddr, readaddr + readlen, self.messageDataLength):
 				message[3] = int(x / 256)
 				message[4] = int(x % 256)
@@ -77,18 +79,14 @@ class Ghidorah(object):
 				# wait for the response
 				response = ser.read(self.message_size)
 				if len(response) == self.message_size:
-					error = 0
 					message[6:] = response[6:]
+
 					self.logInboundMessage(response)
-				else:
-					break;
-				result.extend(response[6:])
+	
 
-		return (error, result)
-
-	def write(self, nodex, writeaddr, data):
-		error = -1
+	def write(self, nodex, writeaddr, writelen, data):
 		message = [0x57, 0x00, nodex, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+
 		l = len(data)
 		message[3] = int(writeaddr / 256)
 		message[4] = int(writeaddr % 256)
@@ -104,11 +102,7 @@ class Ghidorah(object):
 
 			# wait for the response
 			response = ser.read(self.message_size)
-			if len(response) > 0:
-				self.logInboundMessage(response)
-				error = 0
-				
-			return error
+			self.logInboundMessage(response)
 
 
 	# Execute at a specific address
@@ -136,31 +130,26 @@ class Ghidorah(object):
 			bytes = f.read(self.messageDataLength)
 			if len(bytes) == 0:
 				break;
-			error = self.write(nodex, loadaddr, bytes)
-			if error == -1:
-				return error
-			loadaddr = loadaddr + len(bytes)
+			l = len(bytes)
+
+			self.write(nodex, loadaddr, l, bytes)
+			loadaddr = loadaddr + l
 
 		# Execute only if execaddr != 0
 		if execaddr != 0:
 			self.execute(nodex, execaddr)	
-			
-		return error
 
 	# Load a Disk BASIC BIN file (supports segmented BIN files as well)
-	def loadm(self, nodex, file, offset = 0, execaddr = -1):
-		error = 0
-		execaddr_in_file = 0
+	def loadm(self, nodex, file, loadaddr, execaddr = -1):
 		f = open(file, "rb")
 		try: 
-			while True and error != -1:
+			while True:
 				bytes = f.read(5)
 				segsize = bytes[1] * 256 + bytes[2]
-				orgaddr = (bytes[3] * 256 + bytes[4]) + offset
+				orgaddr = bytes[3] * 256 + bytes[4]
 				if segsize == 0:
-					execaddr_in_file = orgaddr
 					# orgaddr is execaddr
-					if execaddr != -1:
+					if execaddr == 0:
 						execaddr = orgaddr
 					break
 				left = segsize
@@ -170,18 +159,16 @@ class Ghidorah(object):
 					bytes = f.read(readchunk)
 					if len(bytes) == 0:
 						break;
-					error = self.write(nodex, orgaddr, bytes)
-					if error == -1:
-						break
-					orgaddr = orgaddr + len(bytes)
+					l = len(bytes)
+
+					self.write(nodex, orgaddr, l, bytes)
+					orgaddr = orgaddr + l
 		except EOFError:
 			pass
 			
-		# Execute only if execaddr != -1
-		if execaddr != -1:
-			self.execute(nodex, execaddr)
-			
-		return (error, execaddr_in_file)
+		# Execute only if execaddr != 0
+		if execaddr != 0:
+			self.execute(nodex, execaddr)	
 
 	def messageToString(self, message):
 		res = ''.join(format(x, '02x') for x in message)

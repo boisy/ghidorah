@@ -14,7 +14,9 @@ The TRS-80 Color Computer family is currently supported, but in theory, any comp
 
 ## Commands
 
-There are Python 3 commands for several common operations:
+There are Python 3 commands for several common operations.
+
+For convenience, you can set the GHIDORAH_DEVICE environment variable on the arbieter to the serial device. 
 
 ### Discover
 
