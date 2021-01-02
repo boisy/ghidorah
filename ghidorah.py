@@ -80,8 +80,9 @@ class Ghidorah(object):
 				response = ser.read(self.message_size)
 				if len(response) == self.message_size:
 					message[6:] = response[6:]
-
+		
 					self.logInboundMessage(response)
+					return response
 	
 
 	def write(self, nodex, writeaddr, writelen, data):
