@@ -9,15 +9,15 @@ defaultDevice = '/dev/cu.usbserial-A2003EyG'
 
 parser = argparse.ArgumentParser(description='Parameters for the command.')
 parser.add_argument('--readaddr', type=str, default='0x600',
-                    help='address to read')
+                    help='address to read (e.g. 0x400, 512)')
 parser.add_argument('--readlen', type=str, default='0x10',
-                    help='length to read')
+                    help='length to read (e.g. 0x100, 256)')
 parser.add_argument('--baud', type=int, default=57600,
                     help='baud rate')
 parser.add_argument('--device', type=str, default=defaultDevice,
                     help='serial port')
 parser.add_argument('--nodex', type=str, default='0xFF',
-                    help='nodex (0-254, or 255 for broadcast (default)')
+                    help='nodex (0-254, or 255 (default) for broadcast)')
 parser.add_argument('--verbose', action='store_true',
                     help='verbosity')
 

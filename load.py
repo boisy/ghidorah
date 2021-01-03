@@ -19,7 +19,7 @@ parser.add_argument('--baud', type=int, default=57600,
 parser.add_argument('--device', type=str, default=defaultDevice,
                     help='serial port')
 parser.add_argument('--nodex', type=str, default='0xFF',
-                    help='nodex 0-254, or 255 for broadcast (default)')
+                    help='nodex 0-254, or 255 (default) for broadcast')
 parser.add_argument('--verbose', action='store_true',
                     help='verbosity')
 
