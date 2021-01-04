@@ -12,6 +12,10 @@ BLACK EQU $80
 FO equ RED
 BK equ BLACK
 
+ExecAddr equ $6000
+
+ org ExecAddr
+
  pshs  u
  lda   MyNodex,u
 # anda  #$01
@@ -158,3 +162,5 @@ l@ stu ,x
   bne l@
 
   rts
+
+  END ExecAddr

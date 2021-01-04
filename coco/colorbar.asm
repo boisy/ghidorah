@@ -7,6 +7,9 @@ RED equ $BF
 BLUE equ $AF
 BLACK equ $80
 
+ExecAddr equ $6000
+ org ExecAddr
+
  jsr $a928
 
  ldx #$400
@@ -87,3 +90,4 @@ write2
 
  rts
 
+ END ExecAddr
