@@ -23,9 +23,9 @@ banner:
 dsk:	bin
 	decb dskini ghidorah.dsk
 	decb copy autoexec.bas ghidorah.dsk,AUTOEXEC.BAS -0 -t
-	decb copy -2 /tmp/ghidorah.bin ghidorah.dsk,GHIDORAH.BIN
-	decb copy -2 /tmp/colorbar.bin ghidorah.dsk,COLORBAR.BIN
-	decb copy -2 /tmp/co.bin ghidorah.dsk,CO.BIN
+	decb copy -2 ghidorah.bin ghidorah.dsk,GHIDORAH.BIN
+	decb copy -2 colorbar.bin ghidorah.dsk,COLORBAR.BIN
+	decb copy -2 co.bin ghidorah.dsk,CO.BIN
 
 bin:	ghidorah.asm colorbar.asm co.asm
 	$(AS) $(ASOUT)ghidorah.bin ghidorah.asm $(AFLAGS) --decb
