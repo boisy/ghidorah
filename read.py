@@ -1,5 +1,6 @@
 # Usage:
 #  --readaddr <address> --readlen <read_length> --device <serdev> --baud <baudrate> --nodex <#>
+import sys
 import ghidorah
 import argparse
 
@@ -18,6 +19,8 @@ parser.add_argument('--device', type=str, default=defaultDevice,
                     help='serial port')
 parser.add_argument('--nodex', type=str, default='0xFF',
                     help='nodex (0-254, or 255 (default) for broadcast)')
+parser.add_argument('--raw', action='store_true',
+                    help='dump values in raw binary')
 parser.add_argument('--verbose', action='store_true',
                     help='verbosity')
 
@@ -28,7 +31,12 @@ readaddr = int(args.readaddr, 0)
 readlen = int(args.readlen, 0)
 nodex = int(args.nodex, 0)
 verbose = args.verbose
+raw = args.raw
 
 l = ghidorah.Ghidorah(device, baud, verbose)
 b = l.read(nodex, readaddr, readlen)
-print(b)
+if raw == False:
+	print(b)
+else:
+	c = bytes(b)
+	sys.stdout.buffer.write(c)
