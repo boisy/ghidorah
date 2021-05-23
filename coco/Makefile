@@ -22,10 +22,10 @@ banner:
 
 dsk:	bin
 	decb dskini ghidorah.dsk
-	decb copy autoexec.bas ghidorah.dsk,AUTOEXEC.BAS -0 -t
-	decb copy -2 ghidorah.bin ghidorah.dsk,GHIDORAH.BIN
-	decb copy -2 colorbar.bin ghidorah.dsk,COLORBAR.BIN
-	decb copy -2 co.bin ghidorah.dsk,CO.BIN
+	decb copy -r autoexec.bas ghidorah.dsk,AUTOEXEC.BAS -0 -t
+	decb copy -r -2 ghidorah.bin ghidorah.dsk,GHIDORAH.BIN
+	decb copy -r -2 colorbar.bin ghidorah.dsk,COLORBAR.BIN
+	decb copy -r -2 co.bin ghidorah.dsk,CO.BIN
 
 bin:	ghidorah.asm colorbar.asm co.asm
 	$(AS) $(ASOUT)ghidorah.bin ghidorah.asm $(AFLAGS) --decb
@@ -37,8 +37,8 @@ rom:	ghidorah.asm
 	os9 padrom 8192 ghidorah.rom
 
 wav:	ghidorah.asm
-	$(AS) $(ASOUT)/tmp/ghidorah.cas $< $(AFLAGS) --format=srec
-	makewav -l0 /tmp/ghidorah.cas -oghidorah.wav
+	$(AS) $(ASOUT) ghidorah.cas $< $(AFLAGS) --format=srec
+	makewav -l0 ghidorah.cas -oghidorah.wav
 
 clean:
 	-rm $(BINS) $(ROMS) $(DSKS) $(WAVS)
