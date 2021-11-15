@@ -1,6 +1,6 @@
 # Ghidorah
 
-Ghidorah is a protocol for passing information between computers linked together via a special RS-232 cable. Ghidorah employs a ring topology; each computer on the ring uses Cooperative Message Passing (CMP) to ensure that the message finds its way to its intended destination. The message's routing path is complete when the arbiter receives the message back from its round trip.
+Ghidorah is a protocol for passing information between computers linked together using a speciallh constructed RS-232 cable. Ghidorah employs a ring topology; each computer on the ring uses Cooperative Message Passing (CMP) to ensure that the message finds its way to its intended destination. The message's routing path is complete when the arbiter receives the message back from its round trip.
 
 The TRS-80 Color Computer family is currently supported, but in theory, any computer with an RS-232 port can be part of the ring.
 
